@@ -154,7 +154,7 @@ def main():
 
     if args.interactive:
         geometries = [pcd]
-        if not args.no_coordinate:
+        if args.coordinate:
             aabb, coordinate_frame = create_aabb_and_coordinate_frame(pcd)
             geometries += [aabb, coordinate_frame]
 
