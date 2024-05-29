@@ -137,6 +137,10 @@ def main():
         action='store_true',
         help='Rotate model to upside-down')
     parser.add_argument(
+        '--webrtc',
+        action='store_true',
+        help='Launch 3D interactive viewer with webrtc mode (Please set with --interactive.) (There is no support for an arm arch.)')
+    parser.add_argument(
         '--interactive',
         action='store_true',
         help='Launch 3D interactive viewer')
@@ -148,6 +152,9 @@ def main():
         help='Save the image of the listed index')
     args = parser.parse_args()
 
+    if args.webrtc:
+        o3d.visualization.webrtc_server.enable_webrtc()
+
     pcd = o3d.io.read_point_cloud(args.input_ply)
     if args.upside_down:
         rotate_pcd_upside_down(pcd)
@@ -158,7 +165,22 @@ def main():
             aabb, coordinate_frame = create_aabb_and_coordinate_frame(pcd)
             geometries += [aabb, coordinate_frame]
 
-        o3d.visualization.draw_geometries(geometries)
+        o3d.visualization.draw(
+            geometries,
+            width=args.width,
+            height=args.height,
+            show_skybox=False,
+            show_ui=True,
+            bg_color=(
+                0.0,
+                0.0,
+                0.0,
+                1.0))
+        # The webrtc mode does not support below methods
+        # o3d.visualization.draw_geometries(geometries,
+        # width=args.width,
+        # height=args.height
+        # )
         return
 
     os.makedirs(args.output_dir, exist_ok=True)
